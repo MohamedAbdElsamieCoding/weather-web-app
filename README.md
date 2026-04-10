@@ -1,53 +1,103 @@
-# React + TypeScript + Vite
+# Weather App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive weather application built with React, TypeScript, and Vite. Get real-time weather information and 3-day forecasts for any city or your current location.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **City Search**: Enter any city name to get current weather and forecast
+- **Current Location**: Automatically detect and display weather for your location
+- **3-Day Forecast**: View weather predictions for the next three days
+- **Responsive Design**: Optimized for desktop and mobile devices
+- **Loading States**: Smooth loading animations with skeleton UI
+- **Error Handling**: User-friendly error messages for failed requests
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Frontend**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **API**: WeatherAPI.com
+- **Icons**: Weather condition icons from WeatherAPI
 
-## Expanding the ESLint configuration
+## Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (version 16 or higher)
+- npm or yarn
+- WeatherAPI account and API key
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd weather-app
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the root directory and add your WeatherAPI key:
+   ```
+   VITE_WEATHER_API_KEY=your_api_key_here
+   ```
+
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+## Usage
+
+- **Search by City**: Type a city name in the input field and click "Get Weather"
+- **Current Location**: Click "Get Current Location" to use your device's geolocation
+- **View Forecast**: Scroll down to see the 3-day weather forecast
+
+## Project Structure
+
+```
+src/
+├── components/
+│   └── loadingSkeleton.tsx    # Loading animation component
+├── hooks/
+│   └── useWeather.ts          # Custom hook for weather data management
+├── services/
+│   └── weatherService.ts      # API service for WeatherAPI integration
+├── types/
+│   └── weather.type.ts        # TypeScript interfaces for weather data
+├── App.tsx                    # Main application component
+├── main.tsx                   # Application entry point
+└── App.css                    # Global styles
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## API Reference
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
+This app uses [WeatherAPI](https://www.weatherapi.com/) for weather data. The API provides:
+
+- Current weather conditions
+- 3-day weather forecast
+- Location information
+- Weather icons
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Weather data provided by [WeatherAPI](https://www.weatherapi.com/)
+- Built with [Vite](https://vitejs.dev/) and [React](https://reactjs.dev/)
 import reactDom from 'eslint-plugin-react-dom'
 
 export default defineConfig([
