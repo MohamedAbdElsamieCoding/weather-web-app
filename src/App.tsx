@@ -1,97 +1,17 @@
-import { useState } from "react";
 import "./App.css";
+import LoadingSkeleton from "./components/loadingSkeleton";
+import { useWeather } from "./hooks/useWeather";
 
 function App() {
-  interface WeatherData {
-    location: {
-      name: string;
-      country: string;
-    };
-    current: {
-      temp_c: number;
-      temp_f: number;
-      condition: {
-        text: string;
-        icon: string;
-      };
-    };
-  }
-
-  interface Error {
-    message: string;
-  }
-
-  const [city, setCity] = useState("");
-  const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
-
-  const fetchWeather = async () => {
-    if (!city) {
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch(
-        `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}`,
-      );
-      if (!res.ok) {
-        setError({ message: "City not found or API error" });
-        setWeather(null);
-        setLoading(false);
-        return;
-      }
-      const data = await res.json();
-      console.log(data);
-
-      setWeather(data);
-      setLoading(false);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError({ message: error.message });
-        setWeather(null);
-      } else {
-        setError({ message: "An unexpected error occurred" });
-      }
-      setLoading(false);
-    }
-  };
-
-  const getCurrentLocationWeather = () => {
-    if (!navigator.geolocation) {
-      setError({ message: "GeoLocation is not supported by your browser" });
-    }
-    setLoading(false);
-    setWeather(null);
-    setError(null);
-    navigator.geolocation.getCurrentPosition(async (position) => {
-      const { latitude, longitude } = position.coords;
-      try {
-        const res = await fetch(
-          `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${latitude},${longitude}`,
-        );
-        if (!res.ok) {
-          setError({ message: "City not found or API error" });
-          setWeather(null);
-          setLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-        setWeather(data);
-        setLoading(false);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError({ message: err.message });
-        } else {
-          setError({ message: "An unexpected error occurred" });
-        }
-        setLoading(false);
-      }
-    });
-  };
+  const {
+    city,
+    setCity,
+    weather,
+    loading,
+    error,
+    fetchWeather,
+    getCurrentLocationWeather,
+  } = useWeather();
   return (
     <>
       <section>
@@ -103,9 +23,10 @@ function App() {
               <div className="flex mb-4">
                 <input
                   type="text"
+                  value={city}
                   placeholder="Enter your city name"
                   onChange={(e) => setCity(e.target.value)}
-                  className="grow p-2 rounded-l-md border border-gray-700 bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-0"
+                  className="flex-1 p-2 rounded-l-md border border-gray-700 bg-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-0"
                 />
 
                 <button
@@ -130,26 +51,56 @@ function App() {
                 </p>
               )}
             </div>
-            {weather && !error && (
-              <div className="text-center">
-                <h2 className="text-2xl font-semibold mb-2">
-                  {weather.location.name}, {weather.location.country}
-                </h2>
-                <p>
-                  <img
-                    src={weather.current.condition.icon}
-                    alt={weather.current.condition.text}
-                    className="inline-block"
-                  />
-                  {weather.current.condition.text}
-                </p>
-                <p className="mt-2 font-bold">
-                  Temp:{" "}
-                  <span className="font-medium">{weather.current.temp_c}</span>C
-                  /{" "}
-                  <span className="font-medium">{weather.current.temp_f}</span>F
-                </p>
-              </div>
+            {loading ? (
+              <LoadingSkeleton />
+            ) : (
+              weather &&
+              !error && (
+                <div className="text-center">
+                  <h2 className="text-2xl font-semibold mb-2">
+                    {weather.location.name}, {weather.location.country}
+                  </h2>
+                  <p>
+                    <img
+                      src={weather.current.condition.icon}
+                      alt={weather.current.condition.text}
+                      className="inline-block"
+                    />
+                    {weather.current.condition.text}
+                  </p>
+                  <p className="mt-2 font-bold">
+                    Temp:{" "}
+                    <span className="font-medium">
+                      {weather.current.temp_c}
+                    </span>
+                    C /{" "}
+                    <span className="font-medium">
+                      {weather.current.temp_f}
+                    </span>
+                    F
+                  </p>
+                  <div>
+                    <h1 className="text-xl font-semibold mb-4 text-center">
+                      3 Days forecast
+                    </h1>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {weather.forecast.forecastday.map((day) => (
+                        <div
+                          key={day.date}
+                          className="bg-gray-700 rounded-lg p-4 text-center flex flex-col items-center"
+                        >
+                          <p className="font-semibold mb-2">{day.date}</p>
+                          <img
+                            src={day.day.condition.icon}
+                            alt={day.day.condition.text}
+                          />
+                          <p>{day.day.condition.text}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )
             )}
           </div>
         </div>
